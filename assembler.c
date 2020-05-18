@@ -14,7 +14,7 @@
 typedef struct
 {
     char *symbol;
-    long value;
+    char *value;
 }
 table;
 
@@ -115,71 +115,72 @@ int main(int argc, char *argv[])
 void initialize(void)
 {
     //initilizes preset Hack symbols
-    symboltable[0].symbol = "SP", symboltable[0].value = 0;
-    symboltable[1].symbol = "LCL", symboltable[1].value = 1;
-    symboltable[2].symbol = "ARG", symboltable[2].value = 2;
-    symboltable[3].symbol = "THIS", symboltable[3].value = 3;
-    symboltable[4].symbol = "THAT", symboltable[4].value = 4;
-    symboltable[5].symbol = "SCREEN", symboltable[5].value = 16384;
-    symboltable[6].symbol = "KBD", symboltable[6].value = 24576;
+    symboltable[0].symbol = "SP", symboltable[0].value = "0";
+    symboltable[1].symbol = "LCL", symboltable[1].value = "1";
+    symboltable[2].symbol = "ARG", symboltable[2].value = "2";
+    symboltable[3].symbol = "THIS", symboltable[3].value = "3";
+    symboltable[4].symbol = "THAT", symboltable[4].value = "4";
+    symboltable[5].symbol = "SCREEN", symboltable[5].value = "16384";
+    symboltable[6].symbol = "KBD", symboltable[6].value = "24576";
 
     char tmp_str[16][4];
     for (int i = 0; i < 16; i++)
     {
-        symboltable[i+7].value = i;
-        sprintf(tmp_str[i], "R%i", i);
         symboltable[i+7].symbol = malloc(4*sizeof(char));
-        strcpy(symboltable[i+7].symbol, tmp_str[i]);
+        symboltable[i+7].value = malloc(3*sizeof(char));
+        sprintf(symboltable[i+7].value, "%i", i);
+        sprintf(symboltable[i+7].symbol, "R%i", i);
+        // strcpy(symboltable[i+7].symbol, tmp_str[i]);
     }
 
     //initilizes C instruction translation tables
 
-    jump_table[0].symbol = "null", jump_table[0].value = 000;
-    jump_table[1].symbol = "JGT", jump_table[1].value = 001;
-    jump_table[2].symbol = "JEQ", jump_table[2].value = 010;
-    jump_table[3].symbol = "JGE", jump_table[3].value = 011;
-    jump_table[4].symbol = "JLT", jump_table[4].value = 100;
-    jump_table[5].symbol = "JNE", jump_table[5].value = 101;
-    jump_table[6].symbol = "JLE", jump_table[6].value = 110;
-    jump_table[7].symbol = "JMP", jump_table[7].value = 111;
+    jump_table[0].symbol = "null", jump_table[0].value = "000";
+    jump_table[1].symbol = "JGT", jump_table[1].value = "001";
+    jump_table[2].symbol = "JEQ", jump_table[2].value = "010";
+    jump_table[3].symbol = "JGE", jump_table[3].value = "011";
+    jump_table[4].symbol = "JLT", jump_table[4].value = "100";
+    jump_table[5].symbol = "JNE", jump_table[5].value = "101";
+    jump_table[6].symbol = "JLE", jump_table[6].value = "110";
+    jump_table[7].symbol = "JMP", jump_table[7].value = "111";
 
-    dest_table[0].symbol = "null", dest_table[0].value = 000;
-    dest_table[1].symbol = "M", dest_table[1].value = 001;
-    dest_table[2].symbol = "D", dest_table[2].value = 010;
-    dest_table[3].symbol = "MD", dest_table[3].value = 011;
-    dest_table[4].symbol = "A", dest_table[4].value = 100;
-    dest_table[5].symbol = "AM", dest_table[5].value = 101;
-    dest_table[6].symbol = "AD", dest_table[6].value = 110;
-    dest_table[7].symbol = "AMD", dest_table[7].value = 111;
+    dest_table[0].symbol = "null", dest_table[0].value = "000";
+    dest_table[1].symbol = "M", dest_table[1].value = "001";
+    dest_table[2].symbol = "D", dest_table[2].value = "010";
+    dest_table[3].symbol = "MD", dest_table[3].value = "011";
+    dest_table[4].symbol = "A", dest_table[4].value = "100";
+    dest_table[5].symbol = "AM", dest_table[5].value = "101";
+    dest_table[6].symbol = "AD", dest_table[6].value = "110";
+    dest_table[7].symbol = "AMD", dest_table[7].value = "111";
 
-    comp_table[0].symbol = "0", comp_table[0].value = 0101010;
-    comp_table[1].symbol = "1", comp_table[1].value = 0111111;
-    comp_table[2].symbol = "-1", comp_table[2].value = 0111010;
-    comp_table[3].symbol = "D", comp_table[3].value = 0001100;
-    comp_table[4].symbol = "A", comp_table[4].value = 0110000;
-    comp_table[5].symbol = "!D", comp_table[5].value = 0001101;
-    comp_table[6].symbol = "!A", comp_table[6].value = 0110001;
-    comp_table[7].symbol = "-D", comp_table[7].value = 0001111;
-    comp_table[8].symbol = "-A", comp_table[8].value = 0110011;
-    comp_table[9].symbol = "D+1", comp_table[9].value = 0011111;
-    comp_table[10].symbol = "A+1", comp_table[10].value = 0110111;
-    comp_table[11].symbol = "D-1", comp_table[11].value = 0001110;
-    comp_table[12].symbol = "A-1", comp_table[12].value = 0110010;
-    comp_table[13].symbol = "D+A", comp_table[13].value = 0000010;
-    comp_table[14].symbol = "D-A", comp_table[14].value = 0010011;
-    comp_table[15].symbol = "A-D", comp_table[15].value = 0000111;
-    comp_table[16].symbol = "D&A", comp_table[16].value = 0000000;
-    comp_table[17].symbol = "D|A", comp_table[17].value = 0010101;
-    comp_table[18].symbol = "M", comp_table[18].value = 1110000;
-    comp_table[19].symbol = "!M", comp_table[19].value = 1110001;
-    comp_table[20].symbol = "-M", comp_table[20].value = 1110011;
-    comp_table[21].symbol = "M+1", comp_table[21].value = 1110111;
-    comp_table[22].symbol = "M-1", comp_table[22].value = 1110010;
-    comp_table[23].symbol = "D+M", comp_table[23].value = 1000010;
-    comp_table[24].symbol = "D-M", comp_table[25].value = 1010011;
-    comp_table[25].symbol = "M-D", comp_table[25].value = 1000111;
-    comp_table[26].symbol = "D&M", comp_table[26].value = 1000000;
-    comp_table[27].symbol = "D|M", comp_table[27].value = 1010101;
+    comp_table[0].symbol = "0", comp_table[0].value = "0101010";
+    comp_table[1].symbol = "1", comp_table[1].value = "0111111";
+    comp_table[2].symbol = "-1", comp_table[2].value = "0111010";
+    comp_table[3].symbol = "D", comp_table[3].value = "0001100";
+    comp_table[4].symbol = "A", comp_table[4].value = "0110000";
+    comp_table[5].symbol = "!D", comp_table[5].value = "0001101";
+    comp_table[6].symbol = "!A", comp_table[6].value = "0110001";
+    comp_table[7].symbol = "-D", comp_table[7].value = "0001111";
+    comp_table[8].symbol = "-A", comp_table[8].value = "0110011";
+    comp_table[9].symbol = "D+1", comp_table[9].value = "0011111";
+    comp_table[10].symbol = "A+1", comp_table[10].value = "0110111";
+    comp_table[11].symbol = "D-1", comp_table[11].value = "0001110";
+    comp_table[12].symbol = "A-1", comp_table[12].value = "0110010";
+    comp_table[13].symbol = "D+A", comp_table[13].value = "0000010";
+    comp_table[14].symbol = "D-A", comp_table[14].value = "0010011";
+    comp_table[15].symbol = "A-D", comp_table[15].value = "0000111";
+    comp_table[16].symbol = "D&A", comp_table[16].value = "0000000";
+    comp_table[17].symbol = "D|A", comp_table[17].value = "0010101";
+    comp_table[18].symbol = "M", comp_table[18].value = "1110000";
+    comp_table[19].symbol = "!M", comp_table[19].value = "1110001";
+    comp_table[20].symbol = "-M", comp_table[20].value = "1110011";
+    comp_table[21].symbol = "M+1", comp_table[21].value = "1110111";
+    comp_table[22].symbol = "M-1", comp_table[22].value = "1110010";
+    comp_table[23].symbol = "D+M", comp_table[23].value = "1000010";
+    comp_table[24].symbol = "D-M", comp_table[24].value = "1010011";
+    comp_table[25].symbol = "M-D", comp_table[25].value = "1000111";
+    comp_table[26].symbol = "D&M", comp_table[26].value = "1000000";
+    comp_table[27].symbol = "D|M", comp_table[27].value = "1010101";
 
 }
 
@@ -265,7 +266,8 @@ int label_adder(char raw_code[])
     char tmp_symbol[MAX_LINE_LENGTH];
 
     symbol_count++;
-    symboltable[symbol_count].value = line_count;
+    symboltable[symbol_count].value = malloc(MAX_LINE_LENGTH*sizeof(char));
+    sprintf(symboltable[symbol_count].value, "%i", line_count);
 
     for (int i=0; raw_code[i]!='\0'; i++)
     {
@@ -421,23 +423,41 @@ char* translate(node *line)
         {
             if (strcmp(line->dest, dest_table[i].symbol) == 0)
             {
-                trans_out[10] = dest_table[i].value[0] + '0';
-                trans_out[11] = dest_table[i].value[1] + '0';
-                trans_out[12] = dest_table[i].value[2] + '0';
+                trans_out[10] = dest_table[i].value[0];
+                trans_out[11] = dest_table[i].value[1];
+                trans_out[12] = dest_table[i].value[2];
                 break;
             }
         }
 
         for (int i = 0; i < jump_count; i++)
         {
-            if (strcmp(line->dest, dest_table[i].symbol) == 0)
+            if (strcmp(line->jump, jump_table[i].symbol) == 0)
             {
-                trans_out[13] = dest_table[i].value[0] + '0';
-                trans_out[14] = dest_table[i].value[1] + '0';
-                trans_out[15] = dest_table[i].value[2] + '0';
+                trans_out[13] = jump_table[i].value[0];
+                trans_out[14] = jump_table[i].value[1];
+                trans_out[15] = jump_table[i].value[2];
                 break;
             }
         }
+
+        for (int i = 0; i < comp_count; i++)
+        {
+            if (strcmp(line->comp, comp_table[i].symbol) == 0)
+            {
+                trans_out[3] = comp_table[i].value[0];
+                trans_out[4] = comp_table[i].value[1];
+                trans_out[5] = comp_table[i].value[2];
+                trans_out[6] = comp_table[i].value[3];
+                trans_out[7] = comp_table[i].value[4];
+                trans_out[8] = comp_table[i].value[5];
+                trans_out[9] = comp_table[i].value[6];
+                break;
+            }
+        }
+
+
+
 
 
 
@@ -455,23 +475,21 @@ void symbol_checker(node *line)
     {
         if (strcmp(line->address, symboltable[i].symbol) == 0)
         {
-            char val_str[MAX_LINE_LENGTH];
-            sprintf(val_str, "%ld", symboltable[i].value);
-            strcpy(line->address, val_str); // if match is found in table, replaces the symbol in code with the symbol address from table
+            strcpy(line->address, symboltable[i].value); // if match is found in table, replaces the symbol in code with the symbol address from table
             symbol_found = 1;
         }
     }
     if (symbol_found == 0) // if symbol is not found in table, creates symbol as new variable
     {
         symbol_count++;
-        symboltable[symbol_count].value = variable_count + FIRST_VARIABLE; // inputs next available variable address into symbol table
-        char var_address[MAX_LINE_LENGTH];
-        sprintf(var_address, "%i", variable_count + FIRST_VARIABLE); // replaces the variable in the code with the new variables address
-        strcpy(line->address, var_address);
+        symboltable[symbol_count].value = malloc(MAX_LINE_LENGTH*sizeof(char));
+        sprintf(symboltable[symbol_count].value, "%i", variable_count + FIRST_VARIABLE); // inputs next available variable address into symbol table
 
-        variable_count++;
         symboltable[symbol_count].symbol = malloc(MAX_LINE_LENGTH*sizeof(char));
         strcpy(symboltable[symbol_count].symbol, line->address);  // allocates space for and adds new variable name to symboltable
+        strcpy(line->address, symboltable[symbol_count].value);  // replaces the variable in the code with the new variables address
+
+        variable_count++;
     }
 
 }
@@ -505,6 +523,3 @@ int mem_free(void)
 
     return 0;
 }
-
-
-tst change
