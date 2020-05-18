@@ -36,6 +36,7 @@ int line_count = 0;
 node *line_tail; // tracks most recent line in list for append time of O(1)
 
 int symbol_count = 22; // Hack comes with 23 preset symbols
+int lit_symbol_count = 7;  // first 7 symbols are string literals and dont need to be freed
 int variable_count = 0;
 
 //using a table array (for simplicity) to store RAM address of predefined and user-created variables.
@@ -104,10 +105,7 @@ int main(int argc, char *argv[])
 
     }
 
-
-
-
-    fclose(output_ptr);
+    fclose(output_ptr); // closes output file after writing is finished
 
     mem_free(); // frees all memory allocated to code_list and symboltable
 }
@@ -301,7 +299,7 @@ int label_adder(char raw_code[])
 
 int code_adder(char raw_code[], bool a_check, bool jump_check, bool dest_check, int line_end, int line_start)
 {
-    node *new_line = malloc(sizeof(node));
+    node *new_line = calloc(1,sizeof(node));
     if (new_line == NULL)
     {
         return 1;
@@ -400,7 +398,7 @@ int code_adder(char raw_code[], bool a_check, bool jump_check, bool dest_check, 
 
 char* translate(node *line)
 {
-    char *trans_out = malloc(17*sizeof(char));
+    char *trans_out = calloc(1,17*sizeof(char));
 
     if (line->a_line == 1)
     {
@@ -462,7 +460,7 @@ char* translate(node *line)
 
 
     }
-    printf("%s\n", trans_out);
+
     return trans_out;
 
 }
@@ -499,7 +497,6 @@ void symbol_checker(node *line)
 void add_to_bin(node *in_line, char *out_line)
 {
     long int_address = atoi(in_line->address);
-    printf("%ld\n", int_address);
 
     int bin_count = 0;
 
@@ -520,6 +517,23 @@ void add_to_bin(node *in_line, char *out_line)
 
 int mem_free(void)
 {
+    node *crawler = code_list;
+    node *crawler_pal = NULL;
+
+    // frees the code_list
+    while (crawler != NULL)
+    {
+        crawler_pal = crawler->next;
+        free(crawler);
+        crawler = crawler_pal;
+    }
+
+    // frees the symboltable
+    for (int i = lit_symbol_count; i <= symbol_count; i++)
+    {
+        free(symboltable[i].value);
+        free(symboltable[i].symbol);
+    }
 
     return 0;
 }
